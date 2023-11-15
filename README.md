@@ -28,7 +28,8 @@ export INPUT_DIR="your-input-dir"
 
 Save the file, and then run source ~/.bash_profile (or whichever file you edited) to load the new variables. You can check that the variables were set correctly by running echo $SLACK_WEBHOOK_URL (and the other variable names).
 
-Windows
+## Windows
+
 On Windows, you can set environment variables through the System Properties window.
 
 Right-click on Computer on the desktop or in the Start menu, choose Properties.
