@@ -4,9 +4,11 @@
 <br>
 <br>
 This repo was inspired by Palewire. On attempt to setup Palewire with GitHub Actions, there was the need to authenticate with the OpenID Connect Protocol which (I think unnecessarily) complicated a simple task to bring up a script that is able to archive webpages and send them to a slack channel. The purpose of this script is just that and nothing more.
-<br>
+<br><br>
+
 To make it work, make sure you either setup the secret variables in a `secrets.py`: `SLACK_WEBHOOK_URL, SLACK_AUTH, OUTPUT_DIR, INPUT_DIR` 
-<br>
+<br><br>
+
 Or you do that very same procedure in your system variables.
 <br>
 # Setting Up System Variables
