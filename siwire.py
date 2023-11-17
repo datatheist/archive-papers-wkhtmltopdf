@@ -4,6 +4,7 @@ import requests
 from datetime import datetime
 import time
 import os
+from pdf2image import convert_from_path
 from secrets import *
 
 ###### 
@@ -19,8 +20,14 @@ WKHTMLTOPDF_PATH = "wkhtmltopdf"
 
 # Set the path to the CSV file
 CSV_FILE = f"{INPUT_DIR}/sites.csv"
-
 LOG_FILE = f"{OUTPUT_DIR}/error_log.txt"
+
+
+def convert_pdf_to_jpg(pdf_path, output_dir):
+    images = convert_from_path(pdf_path)
+    for i, image in enumerate(images):
+        image.save(f'{output_dir}/{i}.jpg', 'JPEG')
+    return images
 
 
 def log_message(message):
@@ -67,14 +74,16 @@ def main():
                 f"{WKHTMLTOPDF_PATH} \"{url}\" \"{OUTPUT_DIR}/{twitter}.pdf\"",
             ]
 
-
             log_message(f"Executing command: {' '.join(command)}")
             subprocess.run(command, shell=True)
 
-            send_to_slack(f"{OUTPUT_DIR}/{twitter}.pdf", "#test-palewire-webhook")
-            time.sleep(1)  # Add a delay to avoid potential issues with rapid execution
-            
+            # Convert the PDF to JPG
+            images = convert_pdf_to_jpg(f"{OUTPUT_DIR}/{twitter}.pdf", OUTPUT_DIR)  # Store the returned images
 
+            # Send each page of the PDF (now converted to JPG) to Slack
+            for i in range(len(images)):
+                send_to_slack(f"{OUTPUT_DIR}/{i}.jpg", "#test-palewire-webhook")
+            time.sleep(1)  # Add a delay to avoid potential issues with rapid execution
 
 if __name__ == "__main__":
     main()
