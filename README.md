@@ -43,3 +43,17 @@ You can check that the variables were set correctly by opening a new command pro
 
 Please replace `"your-slack-webhook-url"`, `"your-slack-auth"`, `"your-output-dir"`, and `"your-input-dir"` with your actual values. Let me know if you have any questions! 😊
 
+## Final Setup: Virtual Environment & Requirements.txt 
+
+```bash
+# Create a virtual environment
+python -m venv venv
+
+# Activate the virtual environment (on Windows)
+.\venv\Scripts\activate
+
+# Activate the virtual environment (on Unix or MacOS)
+source venv/bin/activate
+
+# Install requirements from requirements.txt
+pip install -r requirements.txt
