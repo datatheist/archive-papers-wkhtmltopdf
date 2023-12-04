@@ -1,11 +1,10 @@
-import csv
 import subprocess
 import requests
 from datetime import datetime
 import time
 import os
-from pdf2image import convert_from_path
 from secrets import *
+import re
 
 ###### 
 ######
@@ -15,19 +14,12 @@ from secrets import *
 ######
 ###### 
 
-# Set the path to the wkhtmltopdf executable
-WKHTMLTOPDF_PATH = "wkhtmltopdf"
+### Source: https://stackoverflow.com/questions/2225564/get-a-filtered-list-of-files-in-a-directory
+
+images = [f for f in os.listdir('.') if re.match(r'[0-9]+.*\.jpg', f)]
 
 # Set the path to the CSV file
-CSV_FILE = f"{INPUT_DIR}/sites.csv"
 LOG_FILE = f"{OUTPUT_DIR}/error_log.txt"
-
-
-def convert_pdf_to_jpg(pdf_path, output_dir):
-    images = convert_from_path(pdf_path)
-    for i, image in enumerate(images):
-        image.save(f'{output_dir}/{i}.jpg', 'JPEG')
-    return images
 
 
 def log_message(message):
@@ -62,28 +54,10 @@ def send_to_slack(file_path, channel):
 
 
 def main():
-    with open(CSV_FILE, "r") as csv_file:
-        csv_reader = csv.reader(csv_file)
-        next(csv_reader)  # Skip header row
+    for img in range(images):
+        send_to_slack(f"{OUTPUT_DIR}/{img}.jpg", "#test-palewire-webhook")
+    time.sleep(1)  # Add a delay to avoid potential issues with rapid execution
 
-        for row in csv_reader:
-            twitter, url, name, location, timezone, country, language, bundle, wait, no_adguard = row
-
-            # Generate the command for wkhtmltopdf
-            command = [
-                f"{WKHTMLTOPDF_PATH} \"{url}\" \"{OUTPUT_DIR}/{twitter}.pdf\"",
-            ]
-
-            log_message(f"Executing command: {' '.join(command)}")
-            subprocess.run(command, shell=True)
-
-            # Convert the PDF to JPG
-            images = convert_pdf_to_jpg(f"{OUTPUT_DIR}/{twitter}.pdf", OUTPUT_DIR)  # Store the returned images
-
-            # Send each page of the PDF (now converted to JPG) to Slack
-            for i in range(len(images)):
-                send_to_slack(f"{OUTPUT_DIR}/{i}.jpg", "#test-palewire-webhook")
-            time.sleep(1)  # Add a delay to avoid potential issues with rapid execution
 
 if __name__ == "__main__":
     main()
